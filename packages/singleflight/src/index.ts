@@ -17,9 +17,7 @@ export class SingleFlight {
   private inFlight = new Map<string, Promise<unknown>>();
 
   async doAsync<T>(key: string, fn: () => Promise<T>, signal?: AbortSignal): Promise<T> {
-    if (signal?.aborted) {
-      throw signal.reason ?? abortError();
-    }
+    signal?.throwIfAborted();
 
     const existing = this.inFlight.get(key);
 
@@ -36,7 +34,7 @@ export class SingleFlight {
     if (!signal) return shared as Promise<T>;
 
     return new Promise<T>((resolve, reject) => {
-      const onAbort = () => reject(signal.reason ?? abortError());
+      const onAbort = () => reject(signal.reason);
       const cleanup = () => signal.removeEventListener('abort', onAbort);
 
       shared.then(
@@ -53,8 +51,4 @@ export class SingleFlight {
       signal.addEventListener('abort', onAbort, { once: true });
     });
   }
-}
-
-function abortError(): DOMException {
-  return new DOMException('This operation was aborted', 'AbortError');
 }
