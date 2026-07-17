@@ -1,4 +1,8 @@
 {
   "files": [],
-  "references": [{ "path": "./packages/retry" }, { "path": "./packages/singleflight" }]
+  "references": [
+    { "path": "./packages/react-hooks" },
+    { "path": "./packages/retry" },
+    { "path": "./packages/singleflight" }
+  ]
 }
